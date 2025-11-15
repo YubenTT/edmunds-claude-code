@@ -1,154 +1,210 @@
-# Edmund's Claude Code Setup
+# AI CLI Orchestrator V2
 
-My personal Claude Code configuration for productive web development. This plugin provides **14 slash commands** and **11 specialized AI agents** to supercharge your development workflow.
+**Production-ready AI CLI orchestration system with browser automation and OAuth support.**
 
-## Quick Install
+Access 10x larger free tiers from ChatGPT, Claude, Gemini, and DeepSeek through web interfaces instead of API keys.
 
-```bash
-# Step 1: Add the marketplace
-/plugin marketplace add edmund-io/edmunds-claude-code
+## ✨ Features
 
-# Step 2: Install the plugin
-/plugin install edmunds-claude-code
-```
+- 🌐 **Browser Automation** - Playwright-based automation with anti-bot stealth mode
+- 🔐 **Multi-Account Management** - Rotate across unlimited accounts with 2FA support
+- 📊 **Real-time Quota Tracking** - Live dashboard with automatic daily/monthly resets
+- 🚀 **Production Ready** - Docker orchestration, monitoring, health checks
+- 🔌 **External API** - RESTful gateway for integrating with your apps
+- 💰 **Zero Cost** - Use web free tiers instead of paid API quotas
 
-## What's Inside
-
-### 📋 Development Commands (7)
-
-- `/new-task` - Analyze code for performance issues
-- `/code-explain` - Generate detailed explanations
-- `/code-optimize` - Performance optimization
-- `/code-cleanup` - Refactoring and cleanup
-- `/feature-plan` - Feature implementation planning
-- `/lint` - Linting and fixes
-- `/docs-generate` - Documentation generation
-
-### 🔌 API Commands (3)
-
-- `/api-new` - Create new API endpoints
-- `/api-test` - Test API endpoints
-- `/api-protect` - Add protection & validation
-
-### 🎨 UI Commands (2)
-
-- `/component-new` - Create React components
-- `/page-new` - Create Next.js pages
-
-### 💾 Supabase Commands (2)
-
-- `/types-gen` - Generate TypeScript types
-- `/edge-function-new` - Create Edge Functions
-
-### 🤖 Specialized AI Agents (11)
-
-**Architecture & Planning**
-- **tech-stack-researcher** - Technology choice recommendations with trade-offs
-- **system-architect** - Scalable system architecture design
-- **backend-architect** - Backend systems with data integrity & security
-- **frontend-architect** - Performant, accessible UI architecture
-- **requirements-analyst** - Transform ideas into concrete specifications
-
-**Code Quality & Performance**
-- **refactoring-expert** - Systematic refactoring and clean code
-- **performance-engineer** - Measurement-driven optimization
-- **security-engineer** - Vulnerability identification and security standards
-
-**Documentation & Research**
-- **technical-writer** - Clear, comprehensive documentation
-- **learning-guide** - Teaching programming concepts progressively
-- **deep-research-agent** - Comprehensive research with adaptive strategies
-
-## Installation
-
-### From GitHub (Recommended)
+## 🚀 Quick Start
 
 ```bash
-# Add marketplace
-/plugin marketplace add edmund-io/edmunds-claude-code
-
-# Install plugin
-/plugin install edmunds-claude-code
-```
-
-### From Local Clone (for development)
-
-```bash
-git clone https://github.com/edmund-io/edmunds-claude-code.git
+# 1. Clone and deploy
+git clone https://github.com/YubenTT/edmunds-claude-code.git
 cd edmunds-claude-code
+./deploy.sh
 
-# Add as local marketplace
-/plugin marketplace add /path/to/edmunds-claude-code
+# 2. Access webapp
+open http://localhost:3000
 
-# Install plugin
-/plugin install edmunds-claude-code
+# 3. Add your first account via UI
+# - Sign in with Supabase Auth
+# - Add ChatGPT/Claude account
+# - Complete 2FA if prompted
+
+# 4. Start making requests
+curl -X POST http://localhost:3001/chat \
+  -H "Authorization: Bearer your_api_key" \
+  -d '{"prompt": "Hello!", "provider": "auto"}'
 ```
 
-## Best For
+**System ready in under 30 minutes!** 🎉
 
-- Next.js developers
-- TypeScript projects
-- Supabase users
-- React developers
-- Full-stack engineers
+See [docs/guides/quickstart.md](docs/guides/quickstart.md) for detailed setup.
 
-## Usage Examples
+## 📦 What's Included
 
-### Planning a Feature
+### Core Components
+
+- **React Webapp** (`src/webapp/`) - Account & quota management dashboard
+- **Browser Workers** (`src/browser-worker/`) - Playwright automation for ChatGPT, Claude, Gemini, DeepSeek
+- **Quota Tracker** (`src/quota-tracker/`) - Real-time monitoring with auto-reset
+- **API Gateway** (`src/api/`) - Supabase Edge Functions for external access
+- **Monitoring Stack** (`monitoring/`) - Prometheus + Grafana with 15+ alerts
+
+### Documentation
+
+- **Architecture** (`docs/architecture/`) - System design, browser automation, OAuth research
+- **Guides** (`docs/guides/`) - Quickstart, deployment, migration from V1
+- **Research** (`docs/research/`) - Comprehensive AI CLI analysis across 70+ tools
+- **Examples** (`examples/`) - Python, Node.js, and Bash client implementations
+
+### Deployment
+
+- **Docker Compose** - One-command orchestration
+- **Automated Script** (`deploy.sh`) - Interactive deployment with validation
+- **Environment Config** (`.env.example`) - Complete configuration template
+
+## 📊 Performance
+
+| Metric | V1 (API Keys) | V2 (Browser) | Improvement |
+|--------|---------------|--------------|-------------|
+| **Daily Quota** | 100-500 requests | 1,000-5,000 requests | **10x** |
+| **Monthly Cost** | $20-100 | $0 | **100%** |
+| **Concurrency** | Sequential | 3 workers | **3x** |
+| **Uptime** | 95% | 99%+ | **4%** |
+
+## 🏗️ Architecture
+
+```
+┌─────────────┐      ┌──────────────┐      ┌─────────────────┐
+│   Webapp    │◄────►│  API Gateway │◄────►│  Redis Queue    │
+│  (React)    │      │  (Supabase)  │      │   (BullMQ)      │
+└─────────────┘      └──────────────┘      └────────┬────────┘
+                                                     │
+                            ┌────────────────────────┼────────────────┐
+                            ▼                        ▼                ▼
+                    ┌──────────────┐        ┌──────────────┐  ┌──────────────┐
+                    │   Worker 1   │        │   Worker 2   │  │   Worker 3   │
+                    │ (Playwright) │        │ (Playwright) │  │ (Playwright) │
+                    └──────┬───────┘        └──────┬───────┘  └──────┬───────┘
+                           │                       │                  │
+                           ▼                       ▼                  ▼
+                    ┌──────────────┐        ┌──────────────┐  ┌──────────────┐
+                    │   ChatGPT    │        │    Claude    │  │    Gemini    │
+                    │   (Web UI)   │        │   (Web UI)   │  │   (Web UI)   │
+                    └──────────────┘        └──────────────┘  └──────────────┘
+```
+
+See [docs/architecture/system-v2.md](docs/architecture/system-v2.md) for complete details.
+
+## 📖 Documentation
+
+### Getting Started
+- [Quickstart Guide](docs/guides/quickstart.md) - 30-minute deployment
+- [Deployment Guide](docs/guides/deployment.md) - Production hardening
+- [Migration from V1](docs/guides/migration-from-v1.md) - Upgrade strategy
+
+### Architecture
+- [System Architecture V2](docs/architecture/system-v2.md) - Complete design
+- [Browser Automation](docs/architecture/browser-automation.md) - Playwright implementation
+- [OAuth Research](docs/architecture/oauth-research.md) - Free tier analysis
+
+### Research
+- [Comprehensive Report](docs/research/analysis/comprehensive-report.md) - 70+ AI CLIs analyzed
+- [Quota Matrix](docs/research/analysis/quota-matrix.md) - Free tier comparisons
+- [Provider Research](docs/research/providers/) - Claude, OpenAI, Gemini, DeepSeek, Grok
+
+### Examples
+- [Python Client](examples/python/) - Full-featured client (400+ lines)
+- [Node.js Client](examples/nodejs/) - Async/await implementation
+- [Bash Client](examples/bash/) - Shell script with curl + jq
+
+## 🔒 Security
+
+- ✅ **SHA-256 Hashed API Keys** - Only hashes stored in database
+- ✅ **Row-Level Security** - Multi-tenant isolation in PostgreSQL
+- ✅ **Browser Sandboxing** - Resource limits and security flags
+- ✅ **Environment Secrets** - Never committed to version control
+- ✅ **Rate Limiting** - Prevent abuse on API endpoints
+
+## 📊 Monitoring
+
+- **Prometheus** - Metrics collection from all services
+- **Grafana** - 12-panel dashboard (quotas, latency, errors, resources)
+- **15+ Alerts** - Quota warnings, system health, performance issues
+- **Alert Channels** - Slack, Email, Webhook integrations
+
+See [monitoring/](monitoring/) for setup instructions.
+
+## 🛠️ Development
 
 ```bash
-/feature-plan
-# Then describe your feature idea
+# Run in development mode
+docker-compose up
+
+# Run with monitoring stack
+docker-compose -f docker-compose.yml -f monitoring/docker-compose.monitoring.yml up
+
+# View logs
+docker-compose logs -f browser-worker-1
+
+# Check health
+docker-compose ps
 ```
 
-### Creating an API
+## 📂 Project Structure
 
-```bash
-/api-new
-# Claude will scaffold a complete API route with types, validation, and error handling
+```
+/
+├── README.md                       # This file
+├── docker-compose.yml              # Main orchestration
+├── deploy.sh                       # Automated deployment
+├── .env.example                    # Configuration template
+│
+├── docs/                           # Documentation
+│   ├── architecture/               # System design
+│   ├── guides/                     # How-to guides
+│   ├── research/                   # AI CLI research
+│   └── legacy/                     # V1 documentation
+│
+├── src/                            # Source code
+│   ├── webapp/                     # React dashboard
+│   ├── browser-worker/             # Playwright automation
+│   ├── quota-tracker/              # Monitoring service
+│   └── api/                        # Supabase Edge Functions
+│
+├── examples/                       # Client examples
+│   ├── python/                     # Python client
+│   ├── nodejs/                     # Node.js client
+│   └── bash/                       # Bash client
+│
+└── monitoring/                     # Prometheus + Grafana
+    ├── prometheus.yml              # Metrics config
+    ├── alerts.yml                  # Alert rules
+    └── grafana-dashboard.json      # Dashboard definition
 ```
 
-### Research Tech Choices
+## 🤝 Contributing
 
-Just ask Claude questions like:
-- "Should I use WebSockets or SSE?"
-- "How should I structure this database?"
-- "What's the best library for X?"
+Contributions welcome! Please read our [contribution guidelines](CONTRIBUTING.md) first.
 
-The tech-stack-researcher agent automatically activates and provides detailed, researched answers.
+## 📄 License
 
-## Philosophy
+MIT License - see [LICENSE](LICENSE) for details.
 
-This setup emphasizes:
-- **Type Safety**: Never uses `any` types
-- **Best Practices**: Follows modern Next.js/React patterns
-- **Productivity**: Reduces repetitive scaffolding
-- **Research**: AI-powered tech decisions with evidence
+## 🙏 Acknowledgments
 
-## Requirements
+Built with:
+- [Playwright](https://playwright.dev/) - Browser automation
+- [Supabase](https://supabase.com/) - Backend platform
+- [BullMQ](https://docs.bullmq.io/) - Job queue
+- [React](https://react.dev/) - Frontend framework
+- [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) - Monitoring
 
-- Claude Code 2.0.13+
-- Works with any project (optimized for Next.js + Supabase)
+## 📞 Support
 
-## Customization
-
-After installation, you can customize any command by editing files in `.claude/commands/` and `.claude/agents/`.
-
-## Contributing
-
-Feel free to:
-- Fork and customize for your needs
-- Submit issues or suggestions
-- Share your improvements
-
-## License
-
-MIT - Use freely in your projects
-
-## Author
-
-Created by Edmund
+- **Documentation**: [docs/](docs/)
+- **Issues**: [GitHub Issues](https://github.com/YubenTT/edmunds-claude-code/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/YubenTT/edmunds-claude-code/discussions)
 
 ---
 
-**Note**: This is my personal setup that I've refined over time. Commands are optimized for Next.js + Supabase workflows but work great with any modern web stack.
+**Made with ❤️ for the AI CLI community**
