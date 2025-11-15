@@ -1,0 +1,178 @@
+{
+  "dashboard": {
+    "title": "AI CLI Orchestrator V2 - Main Dashboard",
+    "tags": ["ai", "orchestrator", "monitoring"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Overview",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "count(up{job=\"browser-workers\"} == 1)",
+            "legendFormat": "Active Workers"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Total Accounts",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(accounts_total)",
+            "legendFormat": "Total Accounts"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Active Accounts",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(active_accounts_count)",
+            "legendFormat": "Active"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Queue Depth",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "bullmq_queue_waiting",
+            "legendFormat": "Waiting Jobs"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Requests per Minute",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(requests_total[1m])",
+            "legendFormat": "{{provider}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "Requests/min"},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Success Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(requests_completed_total[5m]) / rate(requests_total[5m])",
+            "legendFormat": "{{provider}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "Success Rate", "format": "percentunit"},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Quota Usage by Provider",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "quota_daily_used / quota_daily_limit",
+            "legendFormat": "{{provider}} - {{account}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "Usage %", "format": "percentunit", "max": 1},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Request Latency (P95)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{provider}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "Latency (s)"},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Error Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "rate(requests_failed_total[5m]) / rate(requests_total[5m])",
+            "legendFormat": "{{provider}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "Error Rate", "format": "percentunit"},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 10,
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 28},
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[5m])",
+            "legendFormat": "{{job}}"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 28},
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "{{job}}"
+          }
+        ],
+        "yaxes": [
+          {"label": "Memory", "format": "bytes"}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Active Sessions",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 28},
+        "targets": [
+          {
+            "expr": "active_sessions_count",
+            "legendFormat": "{{provider}}"
+          }
+        ]
+      }
+    ],
+    "refresh": "30s",
+    "time": {"from": "now-6h", "to": "now"}
+  }
+}
