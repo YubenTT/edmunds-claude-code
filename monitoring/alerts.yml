@@ -1,0 +1,165 @@
+# Prometheus Alert Rules for AI CLI Orchestrator V2
+
+groups:
+  - name: ai_orchestrator_alerts
+    interval: 30s
+    rules:
+      # System Health
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for 5 minutes on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 90% for 5 minutes"
+
+      - alert: DiskSpaceRunningOut
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk space running low"
+          description: "Less than 10% disk space available"
+
+      # Service Health
+      - alert: ServiceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service is down"
+          description: "{{ $labels.job }} on {{ $labels.instance }} has been down for 2 minutes"
+
+      - alert: BrowserWorkerDown
+        expr: up{job="browser-workers"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Browser worker is down"
+          description: "Browser worker {{ $labels.instance }} is not responding"
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis server is not responding"
+
+      # Queue Metrics
+      - alert: HighQueueDepth
+        expr: bullmq_queue_waiting > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High queue depth"
+          description: "Queue has more than 100 waiting jobs for 10 minutes"
+
+      - alert: HighJobFailureRate
+        expr: rate(bullmq_job_failed_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High job failure rate"
+          description: "Job failure rate is above 10% over 5 minutes"
+
+      # Quota Alerts
+      - alert: QuotaAlmostExceeded
+        expr: (quota_daily_used / quota_daily_limit) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Quota almost exceeded"
+          description: "{{ $labels.provider }} quota is at {{ $value }}% for account {{ $labels.account }}"
+
+      - alert: QuotaExceeded
+        expr: (quota_daily_used / quota_daily_limit) >= 1.0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Quota exceeded"
+          description: "{{ $labels.provider }} quota exceeded for account {{ $labels.account }}"
+
+      - alert: NoActiveAccounts
+        expr: active_accounts_count == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No active accounts available"
+          description: "All accounts are inactive or quota exceeded"
+
+      # Session Alerts
+      - alert: SessionExpiringSoon
+        expr: (session_expires_at - time()) < 86400
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Session expiring within 24 hours"
+          description: "Session for {{ $labels.provider }} account {{ $labels.account }} expires in less than 24 hours"
+
+      - alert: SessionExpired
+        expr: session_expired == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Session expired"
+          description: "Session expired for {{ $labels.provider }} account {{ $labels.account }}"
+
+      # Performance Alerts
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m])) > 30
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency"
+          description: "95th percentile latency is above 30 seconds for {{ $labels.provider }}"
+
+      - alert: HighErrorRate
+        expr: rate(requests_failed_total[5m]) / rate(requests_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate"
+          description: "Error rate is above 10% for {{ $labels.provider }}"
+
+      # Database Alerts
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database is not responding"
+
+      - alert: TooManyConnections
+        expr: sum(pg_stat_activity_count) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Too many database connections"
+          description: "Database has {{ $value }} connections (limit: 100)"
